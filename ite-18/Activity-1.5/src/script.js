@@ -1,4 +1,5 @@
 import * as THREE from 'three'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
 
 /**
  * Base
@@ -17,8 +18,8 @@ const scene = new THREE.Scene()
 
 // Object
 const mesh = new THREE.Mesh(
-    new THREE.BoxGeometry(1, 1, 1, 5, 5, 5),
-    new THREE.MeshBasicMaterial({ color: 0xff0000 })
+    new THREE.BoxGeometry(1, 1, 1, 5, 5, 5), // Box with subdivisions
+    new THREE.MeshBasicMaterial({ color: 0xff0000 }) // Red color material
 )
 scene.add(mesh)
 
@@ -27,7 +28,7 @@ const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height)
 camera.position.x = 2
 camera.position.y = 2
 camera.position.z = 2
-camera.lookAt(mesh.position)
+camera.lookAt(mesh.position) // Make the camera look at the mesh
 scene.add(camera)
 
 // Renderer
@@ -36,21 +37,22 @@ const renderer = new THREE.WebGLRenderer({
 })
 renderer.setSize(sizes.width, sizes.height)
 
-// Animate
-const clock = new THREE.Clock()
+// Controls
+const controls = new OrbitControls(camera, canvas)
+controls.enableDamping = true // Enable damping for smooth control
+controls.dampingFactor = 0.25 // Optional: Adjust damping factor (default is 0.25)
 
-const tick = () =>
-{
-    const elapsedTime = clock.getElapsedTime()
+// Animation loop
+const tick = () => {
+    // Update controls for damping
+    controls.update() // Only needed if damping is enabled
 
-    // Update objects
-    mesh.rotation.y = elapsedTime;
-
-    // Render
+    // Render the scene
     renderer.render(scene, camera)
 
-    // Call tick again on the next frame
-    window.requestAnimationFrame(tick)
+    // Request the next frame
+    requestAnimationFrame(tick)
 }
 
+// Start the animation loop
 tick()
