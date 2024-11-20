@@ -2,7 +2,6 @@
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import Cube from './objects/Cube.jsx';
 import Sphere from './objects/Sphere.jsx';
 import Lighting from './objects/Lighting.jsx';
 
@@ -42,30 +41,30 @@ const ThreeScene = () => {
     mountRef.current.appendChild(renderer.domElement);
 
 
-    
-
-
     // Create and add objects to the scene
     const earthMaterial = {
       map: earthTexture
     }
 
     const moonMaterial = {
-      map: moonTexture
+      map: earthTexture
     }
     const earth = Sphere(earthMaterial, 1, 25, 25);
     earth.rotation.x = THREE.MathUtils.degToRad(23.5);
-
  
     const moon = Sphere(moonMaterial, 0.8, 25, 25);
-    moon.position.x = 3;
-    moon.position.y = 3;
+    moon.position.x = 2;
+    moon.position.y = 2;
 
     
+    const { ambientLight, directionalLight } = Lighting();
+    const axesHelper = new THREE.AxesHelper(5);  // The size of the axes helper (5 units long)
+    earth.add(axesHelper);
+
 
     //Add to scenes
     scene.add(earth);
-    earth.add(moon);
+    scene.add(moon);
     scene.add(ambientLight);
     scene.add(directionalLight);
 
@@ -75,9 +74,7 @@ const ThreeScene = () => {
     //Controls
     const controls = new OrbitControls(camera, renderer.domElement);
 
-    const { ambientLight, directionalLight } = Lighting();
-    const axesHelper = new THREE.AxesHelper(5);  // The size of the axes helper (5 units long)
-    earth.add(axesHelper);
+    
     
     // Animation loop
     const animate = () => {
