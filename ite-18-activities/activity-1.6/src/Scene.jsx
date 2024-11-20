@@ -13,8 +13,8 @@ const ThreeScene = () => {
     height: window.innerHeight,
   }
 
-  const earthTexture = new THREE.TextureLoader().load('./src/assets/earthmap1k.jpg');
-  const moonTexture = new THREE.TextureLoader().load('./src/assets/moonmap4k.jpg');
+  const earthTexture = new THREE.TextureLoader().load('/src/public/assets/earthmap1k.jpg');
+  //const moonTexture = new THREE.TextureLoader().load('/src/public/assets/moonmap4k.jpg');
 
   //Use this if you want to automatically resize the window
   const reSizeOnWindow = () => {
