@@ -1,9 +1,13 @@
 // src/objects/Sphere.jsx
 import * as THREE from 'three';
 
-const Sphere = () => {
-  const geometry = new THREE.SphereGeometry(1, 32, 32);
-  const material = new THREE.MeshBasicMaterial({ color: 0xffffff });
+const Sphere = (objectMaterial, radius, widthSegments, heightSegments) => {
+  const geometry = new THREE.SphereGeometry(radius, widthSegments, heightSegments);
+  
+  // Create material and apply the texture
+  const material = new THREE.MeshBasicMaterial(objectMaterial);
+  
+  // Create the mesh with the geometry and material
   const sphere = new THREE.Mesh(geometry, material);
   
   return sphere;

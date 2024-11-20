@@ -1,6 +1,7 @@
 // src/components/ThreeScene.jsx
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 import Cube from './objects/Cube.jsx';
 import Sphere from './objects/Sphere.jsx';
 import Lighting from './objects/Lighting.jsx';
@@ -8,50 +9,84 @@ import Lighting from './objects/Lighting.jsx';
 const ThreeScene = () => {
   const mountRef = useRef(null);
 
+  const windowSize = {
+    width: window.innerWidth,
+    height: window.innerHeight,
+  }
+
+  const earthTexture = new THREE.TextureLoader().load('./src/assets/earthmap1k.jpg');
+  const moonTexture = new THREE.TextureLoader().load('./src/assets/moonmap4k.jpg');
+
+  //Use this if you want to automatically resize the window
+  const reSizeOnWindow = () => {
+    window.addEventListener('resize', () =>
+      {
+      // Update sizes
+      windowSize.width = window.innerWidth
+      windowSize.height = window.innerHeight
+      // Update camera
+      camera.aspect = windowSize.width / windowSize.height
+      // Update renderer
+      renderer.setSize(windowSize.width, windowSize.height)
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+      })
+  }
+
   useEffect(() => {
+    
     // Create scene, camera, and renderer
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer();
-    renderer.setSize(window.innerWidth, window.innerHeight);
+    renderer.setSize(windowSize.width, windowSize.height);
     mountRef.current.appendChild(renderer.domElement);
 
-    // Create and add objects to the scene
-    const cube = Cube();
-    const cube1 = Cube();
-    const sphere = Sphere();
-    const { ambientLight, directionalLight } = Lighting();
+
     
 
-    cube.position.x = 3;
-    cube.position.y = 3;
 
-    cube1.position.x = -3;
-    cube1.position.y = -3;
-    scene.add(cube);
-    scene.add(cube1);
-    scene.add(sphere);
+    // Create and add objects to the scene
+    const earthMaterial = {
+      map: earthTexture
+    }
+
+    const moonMaterial = {
+      map: moonTexture
+    }
+    const earth = Sphere(earthMaterial, 1, 25, 25);
+    earth.rotation.x = THREE.MathUtils.degToRad(23.5);
+
+ 
+    const moon = Sphere(moonMaterial, 0.8, 25, 25);
+    moon.position.x = 3;
+    moon.position.y = 3;
+
+    
+
+    //Add to scenes
+    scene.add(earth);
+    earth.add(moon);
     scene.add(ambientLight);
     scene.add(directionalLight);
 
     // Position camera
     camera.position.z = 5;
 
+    //Controls
+    const controls = new OrbitControls(camera, renderer.domElement);
+
+    const { ambientLight, directionalLight } = Lighting();
+    const axesHelper = new THREE.AxesHelper(5);  // The size of the axes helper (5 units long)
+    earth.add(axesHelper);
+    
     // Animation loop
     const animate = () => {
       requestAnimationFrame(animate);
       
       // Rotate objects
-      cube.rotation.x += 0.01;
-      cube.rotation.y += 0.01;
-
-      cube1.rotation.x += 0.05;
-      cube1.rotation.y += 0.05;
-
-      sphere.rotation.x += 0.01;
-      sphere.rotation.y += 0.01;
-
+      earth.rotation.y += 0.05;
       // Render the scene from camera's perspective
+      controls.update()
       renderer.render(scene, camera);
     };
 
