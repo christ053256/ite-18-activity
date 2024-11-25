@@ -17,8 +17,7 @@ const ThreeScene = () => {
   const earthCloudeTexture = new THREE.TextureLoader().load('/earthcloudmap.jpg');
   const moonTexture = new THREE.TextureLoader().load('/mapMoon.jpg');
   const normalMoonTexture = new THREE.TextureLoader().load('/normalMoonMap.jpg');
-  const backgroundTexture = new THREE.TextureLoader().load('/starySky.jpg');
-
+  
 
   // Window resizing function
   const reSizeOnWindow = () => {
@@ -32,57 +31,78 @@ const ThreeScene = () => {
   };
 
   useEffect(() => {
-    // Create scene, camera, and renderer
-    const scene = new THREE.Scene();
-    scene.background = backgroundTexture;
-    scene.backgroundIntensity = 0.3;
-    scene.backgroundRotation = (1, 1 ,1);
-    scene.environment = 0.3;
-    scene.fog = new THREE.FogExp2( 0xcccccc, 0.008);
 
+    // Create scene
+    const scene = new THREE.Scene();
+
+    // Create camera, renderer
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize(windowSize.width, windowSize.height);
     mountRef.current.appendChild(renderer.domElement);
 
-    // Earth and Moon materials
-    const earthMaterial = new THREE.MeshBasicMaterial({ map: earthTexture, normalMap: earthCloudeTexture });
-    const moonMaterial = new THREE.MeshBasicMaterial({ map: moonTexture, normalMap: normalMoonTexture });
+
+    // Earth material
+    const earthMaterial = { 
+      map: earthTexture, 
+      normalMap: earthCloudeTexture,
+      roughness: 0.5,
+      color: 0xffffff,
+      shininess: 30,
+    };
+    // Moon material
+    const moonMaterial = { 
+      map: moonTexture, 
+      normalMap: normalMoonTexture,
+      roughness: 0.3,
+      color: 0xffffff,
+      shininess: 10,
+    };
 
 
     // Create Earth and Moon meshes
-    const earthRadius = 1.3;
+    const earthRadius = 10;
     const earth = Sphere(earthMaterial, earthRadius, 25, 25);
     earth.rotation.x = THREE.MathUtils.degToRad(23.5);  // Earth tilt
 
-    const moonDistanceFromEarth = 8;
+    const moonDistanceFromEarth = earthRadius * 5;
     const moon = Sphere(moonMaterial, (earthRadius * 0.27), 25, 25);
     moon.position.set(moonDistanceFromEarth, 0, 0);  // Initial position of the moon
 
+    //Add axes helper to Earth for debugging
+    const axesHelper = new THREE.AxesHelper(5);  // The size of the axes helper (5 units long)
+
     // Lighting
-    const { ambientLight, directionalLight } = Lighting();
+    const { ambientLight, directionalLight } = Lighting(0.5, 0.75, -1);
 
-    // Add axes helper to Earth for debugging
-    // const axesHelper = new THREE.AxesHelper(5);  // The size of the axes helper (5 units long)
-    // earth.add(axesHelper);
-
-    // Add Earth and Moon to the scen
-    scene.add(earth);
-    scene.add(moon);
+    // Add other lights
     scene.add(ambientLight);
     scene.add(directionalLight);
 
+    // Add Hemisphere Light
+    const hemisphereLight = new THREE.HemisphereLight( 0xffffbb, 0x080820, 2); // Sky color, ground color, intensity
+    hemisphereLight.position.set(-10, 5, 0); // Position above the Earth
+    scene.add(hemisphereLight);
+
+    const light = new THREE.PointLight( 0x807f7f, 10000);
+    light.position.set(15, 5, 15);
+    light.castShadow = true;
+    scene.add(light);
+    
+    
+    // Add Earth and Moon to the scen
+    scene.add(earth);
+    scene.add(moon);
+
     // Position camera
-    camera.position.z = 10;
+    camera.position.z = 30;
 
     // Controls
     const controls = new OrbitControls(camera, renderer.domElement);
-    //const parallaxFactor = 0.5;
+
     // Animation loop
     const animate = () => {
       requestAnimationFrame(animate);
-      //scene.background.offset.x = camera.position.x * parallaxFactor;
-      //scene.background.offset.y = camera.position.y * parallaxFactor;
 
       // Rotate Earth on its own axis (faster)
       earth.rotation.y += 0.08;
@@ -93,7 +113,7 @@ const ThreeScene = () => {
       moon.position.z = (-moonDistanceFromEarth * Math.sin(-time));  // Moon's position based on sine (Z)
 
       // Rotate Moon on its own axis (optional)
-      moon.rotation.y += 0.05;
+      moon.rotation.y += 0.005;
 
       // Update controls
       controls.update();
