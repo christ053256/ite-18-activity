@@ -53,7 +53,7 @@ const ThreeScene = () => {
     // Moon material
     const moonMaterial = { 
       map: moonTexture, 
-      normalMap: normalMoonTexture,
+      //normalMap: normalMoonTexture,
       roughness: 0.3,
       color: 0xffffff,
       shininess: 10,
@@ -61,7 +61,7 @@ const ThreeScene = () => {
 
 
     // Create Earth and Moon meshes
-    const earthRadius = 10;
+    const earthRadius = 20;
     const earth = Sphere(earthMaterial, earthRadius, 25, 25);
     earth.rotation.x = THREE.MathUtils.degToRad(23.5);  // Earth tilt
 
@@ -95,25 +95,25 @@ const ThreeScene = () => {
     scene.add(moon);
 
     // Position camera
-    camera.position.z = 30;
+    camera.position.z = 150;
 
     // Controls
     const controls = new OrbitControls(camera, renderer.domElement);
-
+    const moonRotation = 0.01;
     // Animation loop
     const animate = () => {
       requestAnimationFrame(animate);
 
       // Rotate Earth on its own axis (faster)
-      earth.rotation.y += 0.08;
+      earth.rotation.y += moonRotation*0.03;
 
       // Revolve Moon around Earth (slower revolution)
-      const time = Date.now() * 0.0001;  // Time-based parameter for smooth animation
+      const time = Date.now() * 0.001;  // Time-based parameter for smooth animation
       moon.position.x = (-moonDistanceFromEarth * Math.cos(-time));  // Moon's position based on cosine (X)
       moon.position.z = (-moonDistanceFromEarth * Math.sin(-time));  // Moon's position based on sine (Z)
 
       // Rotate Moon on its own axis (optional)
-      moon.rotation.y += 0.005;
+      moon.rotation.y += moonRotation;
 
       // Update controls
       controls.update();
