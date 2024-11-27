@@ -1,0 +1,74 @@
+.mouse-sensitivity {
+    background-color: rgba(228, 176, 142, 0.781);
+    border-radius: 10px;
+    align-items: center;
+    display: flex;
+    position: absolute;
+    justify-content: center;
+    top: 10px;
+    left: 10px;
+    padding: 10px;
+}
+
+/* Add margin to child elements */
+.mouse-sensitivity > * {
+    margin: 3px; /* Adjust the value as needed */
+}
+
+.mouse-sensitivity button{
+    border: 1px solid black;
+    background-color: rgb(255, 153, 0);
+    border-radius: 5px;
+    width: 20px;
+    height: 20px;
+    font-weight: 900;
+    text-align: center;
+}
+
+.mouse-sensitivity input[type="range"] {
+    -webkit-appearance: none; /* Override default styles */
+    appearance: none;
+    width: 150px;
+    height: 8px; /* Track height */
+    background: #ddd; /* Track color */
+    border-radius: 5px; /* Rounded track */
+    outline: none; /* Remove outline */
+}
+
+/* Track styling for WebKit browsers */
+.mouse-sensitivity input[type="range"]::-webkit-slider-runnable-track {
+    background: #ddd; /* Track color */
+    border-radius: 5px; /* Rounded track */
+}
+
+/* Thumb styling for WebKit browsers */
+.mouse-sensitivity input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; /* Override default look */
+    appearance: none;
+    width: 15px; /* Thumb width */
+    height: 15px; /* Thumb height */
+    border-radius: 50%; /* Round thumb */
+    background: #04AA6D; /* Thumb color */
+    cursor: pointer; /* Cursor on hover */
+}
+
+/* Track styling for Firefox */
+.mouse-sensitivity input[type="range"]::-moz-range-track {
+    background: #ddd; /* Track color */
+    border-radius: 5px; /* Rounded track */
+}
+
+/* Thumb styling for Firefox */
+.mouse-sensitivity input[type="range"]::-moz-range-thumb {
+    width: 20px; /* Thumb width */
+    height: 20px; /* Thumb height */
+    border-radius: 50%; /* Round thumb */
+    background: #04AA6D; /* Thumb color */
+    cursor: pointer; /* Cursor on hover */
+}
+
+/* Optional: Add hover effect on thumb for better interaction feedback */
+.mouse-sensitivity input[type="range"]::-webkit-slider-thumb:hover,
+.mouse-sensitivity input[type="range"]::-moz-range-thumb:hover {
+    background: #3e8e41; /* Darker color on hover */
+}

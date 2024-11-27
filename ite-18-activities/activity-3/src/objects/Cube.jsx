@@ -1,4 +1,3 @@
-// src/objects/Cube.jsx
 import * as THREE from 'three';
 
 const Cube = () => {
