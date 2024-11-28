@@ -1,21 +1,25 @@
 import * as THREE from 'three';
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
-
-const roadTexture = new THREE.TextureLoader().load("stone_road4k.jpg");
-const roadDisp = new THREE.TextureLoader().load("stone_road_disp_4k.png");
-
+// Define Road as an async function that returns a Promise
 const Road = (x, y, z) => {
-  // Define road geometry (wide and long, to look like a road)
-  const roadGeometry = new THREE.BoxGeometry(x, y, z); // Adjust the width and length
+  const loader = new GLTFLoader();
 
-  // Create the material using the texture
-  const roadMaterial = new THREE.MeshPhongMaterial({
-    map: roadTexture,
+  return new Promise((resolve, reject) => {
+    loader.load(
+      'road2.glb',
+      (road_free) => {
+        const road = road_free.scene;
+        road.scale.set(x, y, z);
+        resolve(road); // Resolve the promise with the loaded road
+      },
+      undefined,
+      (error) => {
+        console.error('Error loading road:', error);
+        reject(error); // Reject the promise in case of an error
+      }
+    );
   });
-
-  // Create the road mesh with the geometry and material
-  const road = new THREE.Mesh(roadGeometry, roadMaterial);
-  return road;
 };
 
 export default Road;
