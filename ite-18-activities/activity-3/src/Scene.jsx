@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import './Scene.css';
 import Road from './objects/Road.jsx';
-import Platform from './objects/platform.jsx';
+import Platform from './objects/Platform.jsx';
 import Un_truck from './objects/Un_truck.jsx';
 import RoadSigned from './objects/RoadSigned.jsx';
 import Car1 from './objects/Car1.jsx';
@@ -11,7 +11,7 @@ import Car1 from './objects/Car1.jsx';
 
 function Scene() {
   const sceneRef = useRef(null); // Ref to store the scene
-  const sensitivity = 0.001; // Fixed sensit ivity value
+  const sensitivity = 0.0001; // Fixed sensit ivity value
 
   useEffect(() => {
     // Only create the scene once (if it hasn't been created yet)
