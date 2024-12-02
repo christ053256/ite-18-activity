@@ -1,10 +1,12 @@
+// Implement the word here!!!
+
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import Lighting from './objects/Lighting.jsx';
 import Earth from './objects/Earth.jsx';
 import Moon from './objects/Moon.jsx';
-
+//import MyWorld from './objects/text-myworld.jsx';
 const ThreeScene = () => {
   const mountRef = useRef(null);
   const [loading, setLoading] = useState(true); // State for loading indicator
