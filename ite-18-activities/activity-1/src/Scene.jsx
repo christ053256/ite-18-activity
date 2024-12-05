@@ -13,6 +13,7 @@ const ThreeScene = () => {
   const mountRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [loadingPercentage, setLoadingPercentage] = useState(0);
+  const numberOfStars = { starNumber: 100 };
   let camera, scene, renderer;
   let earth, moon, textMesh, moonTextMesh, axisHelper;
 
@@ -55,6 +56,33 @@ const ThreeScene = () => {
     };
 
     window.addEventListener('resize', handleResize);
+
+    let stars; // Keep a reference to the stars object
+    // Function to create stars
+    const createStars = (starCount = 100) => {
+      if (stars) {
+        scene.remove(stars); // Remove the existing stars from the scene
+        stars.geometry.dispose(); // Clean up geometry
+        stars.material.dispose(); // Clean up material
+      }
+    
+      const starGeometry = new THREE.BufferGeometry();
+      const starMaterial = new THREE.PointsMaterial({ color: 0xffffff });
+    
+      const positions = new Float32Array(starCount * 3); // 3 coordinates per star
+    
+      for (let i = 0; i < starCount; i++) {
+        positions[i * 3] = (Math.random() - 0.5) * 200; // X-coordinate
+        positions[i * 3 + 1] = (Math.random() - 0.5) * 200; // Y-coordinate
+        positions[i * 3 + 2] = (Math.random() - 0.5) * 200; // Z-coordinate
+      }
+    
+      starGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    
+      stars = new THREE.Points(starGeometry, starMaterial);
+      scene.add(stars);
+    };
+    
 
     const earthRadius = 5;
     const moonRadius = earthRadius * 0.27;
@@ -108,10 +136,10 @@ const ThreeScene = () => {
 
     const fontLoader = new FontLoader();
     fontLoader.load(
-      'node_modules/three/examples/fonts/droid/droid_serif_regular.typeface.json',
+      'droid_serif_regular.typeface.json',
       (droidFont) => {
         const textGeometry = new TextGeometry('Earth', {
-          height: 1,
+          depth: 1,
           size: 3,
           font: droidFont,
         });
@@ -123,10 +151,10 @@ const ThreeScene = () => {
 
     // Load "Moon" Text
     fontLoader.load(
-      'node_modules/three/examples/fonts/droid/droid_serif_regular.typeface.json',
+      'droid_serif_regular.typeface.json',
       (droidFont) => {
         const textGeometry = new TextGeometry('Moon', {
-          height: 1,
+          depth: 1,
           size: 2,
           font: droidFont,
         });
@@ -150,8 +178,6 @@ const ThreeScene = () => {
       axisHelper.visible = value;  // Toggle visibility based on the GUI control
     });
     
-    const earthControls = { rotationSpeed: 0.01 };
-    const moonControls =  { rotationSpeed: 0.01 };
 
     const earthTextVisibility = {
       showText: true, // Initial visibility
@@ -175,6 +201,14 @@ const ThreeScene = () => {
       if (moonTextMesh) {
         moonTextMesh.visible = value; // Toggle visibility based on GUI control
       }
+    });
+    const earthControls = { rotationSpeed: 0.01 };
+    const moonControls =  { rotationSpeed: 0.01 };
+    // Add GUI control for numberOfStars
+    gui.add(numberOfStars, 'starNumber', 0, 10000)
+      .name('Number of Stars')
+      .onChange((value) => {
+        createStars(value); // Recreate stars when value changes
     });
     gui.add(earthControls, 'rotationSpeed', 0, 3).name('Earth Rotation Speed');
     gui.add(moonControls, 'rotationSpeed', 0, 3).name('Moon Rotation Speed');
@@ -235,7 +269,6 @@ const ThreeScene = () => {
       if (textMesh && earth) {
         textMesh.position.set(earth.position.x - 5, earth.position.y + 2, earth.position.z); // Keep the text slightly above the Moon
         textMesh.rotation.y -= 0.01;
-        //textMesh.lookAt(camera.position); // Make the text always face the camera
       }
 
       controls.update();
@@ -243,6 +276,7 @@ const ThreeScene = () => {
     }
 
     init();
+    createStars(numberOfStars.starNumber);
 
     // Cleanup resources on component unmount
     return () => {
