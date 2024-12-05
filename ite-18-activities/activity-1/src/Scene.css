@@ -1,0 +1,53 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500&display=swap');
+
+/* Customize the dat.GUI */
+.dat-gui {
+    background-color: #1e1e1e !important;
+    color: white !important;
+    border: 1px solid #444 !important;
+    font-family: 'Roboto', sans-serif;
+  }
+  
+  .dat-gui ul {
+    padding: 10px !important;
+  }
+  
+  .dat-gui .title {
+    background-color: #444 !important;
+    color: white !important;
+  }
+  
+  .dat-gui .cr {
+    border-bottom: 1px solid #555 !important;
+  }
+  
+  .dat-gui .cr input[type="checkbox"] {
+    accent-color: #4caf50 !important; /* Green toggle */
+  }
+  
+  .dat-gui .slider-fg {
+    background: linear-gradient(90deg, #4caf50, #8bc34a) !important;
+  }
+  
+  .dat-gui .c {
+    border: 1px solid #555 !important;
+    border-radius: 4px;
+    padding: 2px 5px;
+    background-color: #2e2e2e !important;
+  }
+  
+  .dat-gui li > div {
+    background-color: #2e2e2e !important;
+    border: none !important;
+  }
+  
+  .dat-gui .close-button {
+    color: #f44336 !important; /* Red close button */
+    font-weight: bold !important;
+  }
+  
+  .dat-gui .dg .toggle {
+    background-color: #3e3e3e !important;
+    border-radius: 4px;
+  }
+  
