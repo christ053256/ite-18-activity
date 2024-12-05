@@ -1,7 +1,7 @@
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 
-// Define Road as an async function that returns a Promise
-const Earth = (x, y, z) => {
+// Define Earth as an async function that returns a Promise
+const Earth = (x, y, z, onProgress) => {
   const loader = new GLTFLoader();
 
   return new Promise((resolve, reject) => {
@@ -10,11 +10,11 @@ const Earth = (x, y, z) => {
       (myEarth) => {
         const earth = myEarth.scene;
         earth.scale.set(x, y, z);
-        resolve(earth); // Resolve the promise with the loaded road
+        resolve(earth); // Resolve the promise with the loaded earth
       },
-      undefined,
+      onProgress, // Pass the progress callback here
       (error) => {
-        console.error('Error loading road:', error);
+        console.error('Error loading Earth:', error);
         reject(error); // Reject the promise in case of an error
       }
     );

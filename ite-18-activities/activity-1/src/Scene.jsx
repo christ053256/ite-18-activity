@@ -1,17 +1,16 @@
-// Implement the word here!!!
-
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 import Lighting from './objects/Lighting.jsx';
 import Earth from './objects/Earth.jsx';
 import Moon from './objects/Moon.jsx';
-//import MyWorld from './objects/text-myworld.jsx';
+
 const ThreeScene = () => {
   const mountRef = useRef(null);
-  const [loading, setLoading] = useState(true); // State for loading indicator
-  let camera, scene, renderer; // Define variables at a higher scope
-  let earth, moon;
+  const [loading, setLoading] = useState(true);
+  const [loadingPercentage, setLoadingPercentage] = useState(0); // State for loading percentage
+  let camera, scene, renderer;
+  let earth, moon; // These will be set after the objects are loaded
 
   useEffect(() => {
     // Initialize scene, camera, and renderer
@@ -54,75 +53,114 @@ const ThreeScene = () => {
     window.addEventListener('resize', handleResize);
 
     const earthRadius = 5;
-    
-    async function loadEarth() {
-      try {
-        setLoading(true); // Set loading to true before starting to load Earth
-        earth = await Earth(earthRadius, earthRadius, earthRadius);
-        earth.position.set(0, 0, 0);
-        earth.rotation.y = Math.PI;
-        earth.castShadow = true; 
-        earth.receiveShadow = true; 
-        scene.add(earth);
-      } catch (error) {
-        console.error('Error loading Earth:', error); 
-      }
-    }
-
     const moonRadius = earthRadius * 0.27;
-    const moonDistanceFromEarth = 10; // Distance from Earth's center to Moon's center
+    const moonDistanceFromEarth = 10;
 
-    async function loadMoon() {
+    // Create and load Earth
+    const loadEarth = async () => {
       try {
-        moon = await Moon(moonRadius, moonRadius, moonRadius); 
-        moon.position.set(moonDistanceFromEarth + earthRadius + moonRadius + 1, 0, 0); // Set initial position relative to Earth
-        moon.rotation.y = Math.PI;
-        moon.castShadow = true; 
-        moon.receiveShadow = true; 
-        scene.add(moon);
-      } catch (error) {
-        console.error('Error loading Moon:', error); 
-      }
-    }
-   
+        setLoading(true);
+        const loadedEarth = await Earth(earthRadius, earthRadius, earthRadius, (xhr) => {
+          if (xhr.lengthComputable) {
+            const percentComplete = (xhr.loaded / xhr.total) * 100;
+            setLoadingPercentage(Math.round(percentComplete)); // Update loading percentage
+          }
+        });
 
-    async function init() {
-      await Promise.all([loadEarth(), loadMoon()]); // Wait for all assets to load
-      setLoading(false); // Set loading to false after all are loaded
+        // Check if loadedEarth is a valid THREE.Object3D instance
+        if (loadedEarth instanceof THREE.Object3D) {
+          earth = loadedEarth;
+          earth.position.set(0, 0, 0);
+          earth.rotation.y = Math.PI;
+          earth.castShadow = true;
+          earth.receiveShadow = true;
+          scene.add(earth);
+        } else {
+          console.error("Earth failed to load: Not a valid THREE.Object3D instance.");
+        }
+      } catch (error) {
+        console.error('Error loading Earth:', error);
+      }
+    };
+
+    // Create and load Moon
+    const loadMoon = async () => {
+      try {
+        moon = await Moon(moonRadius, moonRadius, moonRadius);
+
+        // Check if moon is a valid THREE.Object3D instance
+        if (moon instanceof THREE.Object3D) {
+          moon.position.set(moonDistanceFromEarth + earthRadius + moonRadius + 1, 0, 0);
+          moon.rotation.y = Math.PI;
+          moon.castShadow = true;
+          moon.receiveShadow = true;
+          scene.add(moon);
+        } else {
+          console.error("Moon failed to load: Not a valid THREE.Object3D instance.");
+        }
+      } catch (error) {
+        console.error('Error loading Moon:', error);
+      }
+    };
+
+    // Initialize scene and load objects
+    const init = async () => {
+      await Promise.all([loadEarth(), loadMoon()]);
+      setLoading(false);
       animate(); // Start animation after everything is loaded
-    }
+    };
 
     function animate() {
       requestAnimationFrame(animate);
 
+      // Rotate Earth around its own axis
       if (earth) {
         earth.rotation.y += 0.01; // Rotate Earth
       }
 
+      // Update Moon's position to orbit around Earth
       if (moon) {
         moon.rotation.y += 0.01; // Rotate Moon around its own axis
-        moon.position.x = earth.position.x + (moonDistanceFromEarth + earthRadius + moonRadius + 1) * Math.cos(Date.now() * 0.001); // Orbit logic
-        moon.position.z = (moonDistanceFromEarth + earthRadius + moonRadius + 1) * Math.sin(-(Date.now() * 0.001)); // Orbit logic
+        moon.position.x = earth.position.x + (moonDistanceFromEarth + earthRadius + moonRadius + 1) * Math.cos(Date.now() * 0.001);
+        moon.position.z = earth.position.z + (moonDistanceFromEarth + earthRadius + moonRadius + 1) * Math.sin(-(Date.now() * 0.001));
       }
 
       controls.update();
       renderer.render(scene, camera);
     }
 
-    init(); // Initialize scene and load objects
-    animate();
+    init();
+
+    // Cleanup resources on component unmount
     return () => {
-      window.removeEventListener('resize', handleResize); // Cleanup resize listener
-      mountRef.current.removeChild(renderer.domElement); // Cleanup renderer on unmount
-      if (renderer) renderer.dispose(); // Dispose of the renderer properly
+      // Ensure earth and moon are defined before attempting cleanup
+      if (earth) {
+        if (earth.geometry) earth.geometry.dispose();
+        if (earth.material) earth.material.dispose();
+        scene.remove(earth);
+      }
+
+      if (moon) {
+        if (moon.geometry) moon.geometry.dispose();
+        if (moon.material) moon.material.dispose();
+        scene.remove(moon);
+      }
+
+      window.removeEventListener('resize', handleResize);
+      mountRef.current.removeChild(renderer.domElement);
+      renderer.dispose();
     };
   }, []);
 
   return (
     <div>
       <div ref={mountRef} />
-      {loading && <div className="loading-indicator">Loading...</div>} {/* Loading indicator */}
-      
+      {loading && (
+        <div className="loading-indicator">
+          Loading... {loadingPercentage}%
+        </div>
+      )}
+
       <style>
         {`
           * {
