@@ -1,0 +1,30 @@
+/* Remove margin and padding for all elements */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box; /* Ensure padding and border don't affect width/height calculations */
+}
+
+/* Ensure the html and body elements fill the full height of the viewport */
+html, body {
+    height: 100%;  /* Full height of the viewport */
+    width: 100%;   /* Full width of the viewport */
+}
+
+/* Optional: Set the body to ensure no scrollbar appears unless content overflows */
+body {
+    overflow: hidden; /* Remove scrollbars */
+}
+
+/* Ensure the canvas is also taking full size */
+#root, .root, #app, .app {
+    height: 100%;
+    width: 100%;
+}
+
+/* Specific styles to ensure Three.js canvas fills the screen */
+canvas {
+    display: block; /* Prevent the canvas from being inline (which can cause spacing) */
+    width: 100%;    /* Full width */
+    height: 100%;   /* Full height */
+}
